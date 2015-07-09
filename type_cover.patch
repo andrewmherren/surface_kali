@@ -1,0 +1,25 @@
+diff --git a/drivers/hid/hid-ids.h b/drivers/hid/hid-ids.h
+index 6d00bb9..2fd9d6d 100644
+--- a/drivers/hid/hid-ids.h
++++ b/drivers/hid/hid-ids.h
+@@ -637,6 +637,7 @@
+ #define USB_DEVICE_ID_MS_SURFACE_PRO_2   0x0799
+ #define USB_DEVICE_ID_MS_TOUCH_COVER_2   0x07a7
+ #define USB_DEVICE_ID_MS_TYPE_COVER_2    0x07a9
++#define USB_DEVICE_ID_MS_TYPE_COVER_3    0x07e2
+
+ #define USB_VENDOR_ID_MOJO             0x8282
+ #define USB_DEVICE_ID_RETRO_ADAPTER    0x3201
+diff --git a/drivers/hid/hid-microsoft.c b/drivers/hid/hid-microsoft.c
+index 8ba17a9..a932cbd 100644
+--- a/drivers/hid/hid-microsoft.c
++++ b/drivers/hid/hid-microsoft.c
+@@ -274,6 +274,8 @@ static const struct hid_device_id ms_devices[] = {
+                .driver_data = MS_NOGET },
+        { HID_USB_DEVICE(USB_VENDOR_ID_MICROSOFT, USB_DEVICE_ID_MS_COMFORT_MOUSE_4500)
+                .driver_data = MS_DUPLICATE_USAGES },
++       { HID_USB_DEVICE(USB_VENDOR_ID_MICROSOFT, USB_DEVICE_ID_MS_TYPE_COVER_3),
++                .driver_data = 0 },
+
+        { HID_BLUETOOTH_DEVICE(USB_VENDOR_ID_MICROSOFT, USB_DEVICE_ID_MS_PRESENTER_8K_
+                .driver_data = MS_PRESENTER },
