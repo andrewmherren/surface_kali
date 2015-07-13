@@ -1,0 +1,2 @@
+#!/bin/bash
+dpkg -i /tmp_install/bashish.deb

@@ -1,0 +1,2 @@
+#!/bin/bash
+gsettings set org.gnome.desktop.background picture-uri 'file:///live-build-config/chroot/usr/share/wallpapers/kali_wood_wallpaper.jpg'
