@@ -8,8 +8,8 @@ index 6d00bb9..2fd9d6d 100644
  #define USB_DEVICE_ID_MS_TYPE_COVER_2    0x07a9
 +#define USB_DEVICE_ID_MS_TYPE_COVER_3    0x07dc
 +#define USB_DEVICE_ID_MS_TYPE_COVER_3_1    0x07dd
-+#define USB_DEVICE_ID_MS_TYPE_COVER_3_1    0x07de
-+#define USB_DEVICE_ID_MS_TYPE_COVER_3_1    0x07e2
++#define USB_DEVICE_ID_MS_TYPE_COVER_3_2    0x07de
++#define USB_DEVICE_ID_MS_TYPE_COVER_3_3    0x07e2
 
 
  #define USB_VENDOR_ID_MOJO             0x8282
