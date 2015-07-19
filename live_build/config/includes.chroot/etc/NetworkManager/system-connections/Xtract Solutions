@@ -1,0 +1,22 @@
+[connection]
+id=Xtract Solutions
+uuid=585b8fa6-31ab-4506-9316-7544589f16fc
+type=802-11-wireless
+
+[802-11-wireless]
+ssid=Xtract Solutions
+mode=infrastructure
+mac-address=4C:0B:BE:2D:18:A6
+security=802-11-wireless-security
+
+[802-11-wireless-security]
+key-mgmt=wpa-psk
+auth-alg=open
+psk=9495locust
+
+[ipv4]
+method=auto
+
+[ipv6]
+method=auto
+ip6-privacy=2

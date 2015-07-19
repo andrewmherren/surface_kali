@@ -1,0 +1,1 @@
+^\w{3} [ :[:digit:]]{11} [._[:alnum:]-]+ (sslh|sslh-select)\[[[:digit:]]+\]: connection from [^[:space:]]+:[[:digit:]]+ to [^[:space:]]+:[^[:space:]]+ forwarded from [^[:space:]]+:[[:digit:]]+ to [^[:space:]]+:(https|ssh|openvpn)$

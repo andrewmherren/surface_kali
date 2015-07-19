@@ -1,0 +1,13 @@
+# Defaults for miredo initscript
+# sourced by /etc/init.d/miredo
+# installed at /etc/default/miredo by the maintainer scripts
+
+#
+# This is a POSIX shell fragment
+#
+
+# Comment out not to start miredo on system startup
+START_MIREDO=true
+
+# Additional options that are passed to the Daemon.
+DAEMON_ARGS=""

@@ -1,0 +1,48 @@
+<!--
+ * btscanner.dtd
+-->
+
+<!ELEMENT btscanner (files,rangedef+)>
+
+<!--
+ * files: the list of config/resource files
+-->
+<!ELEMENT files (log,oui,store)>
+
+<!--
+ * log: the log file
+-->
+<!ELEMENT log (#PCDATA)>
+
+<!--
+ * oui: the oui database
+-->
+<!ELEMENT oui (#PCDATA)>
+
+<!--
+ * store: where the store the details of found items
+-->
+<!ELEMENT store (#PCDATA)>
+
+
+
+<!--
+ * rangedef. for each range address, tell the slave what to do.
+ * needs start and end range. with 
+-->
+<!ELEMENT rangedef (vulnerabilities, name?,hci?,rssi?,lq?,txpwr?,sdp?)>
+<!ATTLIST rangedef start CDATA #REQUIRED
+                   end   CDATA #REQUIRED>
+
+
+<!--
+ * list of services/inforations for a rangedef function
+-->
+<!ELEMENT vulnerabilities (#PCDATA)>
+<!ELEMENT name EMPTY>
+<!ELEMENT hci EMPTY>
+<!ELEMENT rssi EMPTY>
+<!ELEMENT lq EMPTY>
+<!ELEMENT txpwr EMPTY>
+<!ELEMENT sdp EMPTY>
+

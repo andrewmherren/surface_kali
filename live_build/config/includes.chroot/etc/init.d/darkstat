@@ -1,0 +1,127 @@
+#! /bin/sh
+### BEGIN INIT INFO
+# Provides:          darkstat
+# Required-Start: $remote_fs $network
+# Required-Stop:  $remote_fs 
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: start darkstat monitoring system at boot time
+### END INIT INFO
+#
+# Please read /usr/share/doc/darkstat/README.Debian
+
+set -e
+
+. /lib/lsb/init-functions
+
+PATH=/bin:/usr/bin:/sbin:/usr/sbin
+DAEMON="/usr/sbin/darkstat"
+NAME="darkstat"
+DESC="darkstat network daemon"
+INIT="/etc/darkstat/init.cfg"
+HOMEDIR="/var/lib/darkstat"
+PIDFILE="/var/run/$NAME.pid"
+DIR="/var/lib/darkstat"
+
+test -f $DAEMON || exit 0
+
+test -f $INIT || exit 0
+
+
+INTERFACE=""
+PORT=""
+BINDIP=""
+LOCAL=""
+DNS=""
+DAYLOG=""
+DB="--import darkstat.db --export darkstat.db"
+FILTER=""
+
+. $INIT
+
+if [ "$START_DARKSTAT" = "no" ] ; then
+  log_warning_msg "please change the value of START_DARKSTAT in $INIT, in order to start darkstat"
+  exit 0
+fi
+
+test "$START_DARKSTAT" = "yes" || exit 0
+
+case "$1" in
+start)
+  log_begin_msg "Starting $DESC : $NAME "
+  if start-stop-daemon --start --quiet -b --exec $DAEMON -- \
+      $INTERFACE \
+      $PORT \
+      --chroot $DIR \
+      --pidfile $PIDFILE \
+      $BINDIP \
+      $LOCAL \
+      $FIP \
+      $DNS \
+      $DAYLOG \
+      $DB \
+      $OPTIONS \
+      -f "$FILTER"; then
+      log_success_msg "done"
+  else
+      log_progress_msg "already running"
+  fi
+  log_end_msg 0
+  ;;
+stop)
+  log_begin_msg "Stopping $DESC : $NAME... "
+  if [ ! -f "$PIDFILE" ] ; then
+	  log_progress_msg "not running"
+  else
+      if start-stop-daemon --quiet --oknodo --stop --name $NAME --pidfile $PIDFILE --retry 30; then
+           rm -f $PIDFILE
+	   log_success_msg "stopped"
+      else
+           log_progress_msg "not running"
+      fi
+  fi
+  log_end_msg 0
+  ;;
+restart | force-reload)
+  log_begin_msg "Restarting $DESC : $NAME "
+  if [ ! -f "$PIDFILE" ] ; then 
+     log_progress_msg "not running " 
+  else
+     if start-stop-daemon --stop --oknodo --name $NAME --pidfile $PIDFILE --retry 30; then
+          rm -f $PIDFILE
+      else
+         log_progress_msg "$DESC : $NAME is not running"
+         rm -f $PIDFILE
+     fi
+  fi
+  sleep 1
+  start-stop-daemon --start --quiet -b --exec $DAEMON -- \
+      $INTERFACE \
+      $PORT \
+      --chroot $DIR \
+      --pidfile $PIDFILE \
+      $BINDIP \
+      $LOCAL \
+      $FIP \
+      $DNS \
+      $DAYLOG \
+      $DB \
+      $OPTIONS \
+      -f "$FILTER"
+  log_success_msg "done"  
+  log_end_msg 0
+  ;;
+debug-run)
+  log_success_msg "$0: this option is not longer available."
+  log_success_msg "$0: please run darkstat with --no-daemon option"
+  log_success_msg "$0: for more info please check darkstat(8)."
+  ;;
+
+*)
+  N=/etc/init.d/$NAME
+   log_success_msg "Usage: $N {start|stop|restart|force-reload|debug-run}" >&2
+  exit 1
+  ;;
+esac
+
+exit 0

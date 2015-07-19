@@ -1,0 +1,4 @@
+# /etc/initramfs-tools/conf.d/cryptsetup
+
+CRYPTSETUP=yes
+export CRYPTSETUP

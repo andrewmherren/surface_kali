@@ -1,0 +1,102 @@
+#!/bin/sh
+### BEGIN INIT INFO
+# Provides:          dns2tcp
+# Required-Start:    $local_fs $network $remote_fs
+# Required-Stop:     $local_fs $remote_fs
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: dns2tcp server init script
+# Description:       This file should be used to start and stop dns2tcp server.
+### END INIT INFO
+
+# Author: Arnaud Cornet <acornet@debian.org>
+
+PATH=/sbin:/usr/sbin:/bin:/usr/bin
+CONFIG=/etc/dns2tcpd.conf
+OLDDAEMON=/usr/sbin/dns2tcpd
+DAEMON=/usr/bin/dns2tcpd
+USER=nobody
+ENABLED=0
+
+if ! test -x $DAEMON ; then
+	if ! test -x $OLDDAEMON ; then
+		exit 0
+	else
+		DAEMON=$OLDDAEMON
+	fi
+fi
+test -f $CONFIG || exit 0
+
+if [ -e /etc/default/dns2tcp ]; then
+	. /etc/default/dns2tcp
+fi
+
+test "$ENABLED" != "0" || exit 0
+
+. /lib/lsb/init-functions
+
+dns2tcpd_start()
+{
+	start-stop-daemon --start --exec $DAEMON -- -f "$CONFIG" || return 2
+	return 0
+}
+
+dns2tcpd_stop()
+{
+	start-stop-daemon --stop -u $USER --exec $DAEMON -- || return 2
+	return 0
+}
+
+case "$1" in
+start)
+	log_daemon_msg "Starting dns2tcp" "dns2tcpd"
+	dns2tcpd_start
+	case "$?" in
+	0)
+		log_end_msg 0
+		;;
+	1)
+		log_end_msg 1 
+		echo "dns2tcpd not started."
+		;;
+	2)
+		log_end_msg 1
+		;;
+	esac
+	;;
+stop)
+	log_daemon_msg "Stopping dns2tcp" "dns2tcpd"
+	dns2tcpd_stop
+	case "$?" in
+	0|1)
+		log_end_msg 0
+		;;
+	2)
+		log_end_msg 1
+		;;
+	esac
+	;;
+
+reload|force-reload|restart)
+	log_daemon_msg "Restarting dns2tcp" "dns2tcpd"
+	dns2tcpd_stop
+	dns2tcpd_start
+	case "$?" in
+	0)
+		log_end_msg 0
+		;;
+	1)
+		log_end_msg 1
+		;;
+	2)
+		log_end_msg 1
+		;;
+	esac
+	;;
+*)
+	echo "Usage: $0 {start|stop|reload|restart}"
+	exit 3
+	;;
+esac
+
+:

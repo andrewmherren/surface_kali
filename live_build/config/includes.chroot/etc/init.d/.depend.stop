@@ -1,0 +1,18 @@
+TARGETS = openvas-scanner dns2tcp darkstat tor sslh greenbone-security-assistant nginx apache2 samba miredo metasploit openvpn truecrypt snmpd bluetooth openvas-manager beef-xss iodined dradis atftpd redsocks exim4 rlinetd ssh ntp urandom thin arpwatch speech-dispatcher atd stunnel4 pcscd smartmontools saned pulseaudio gdm3 avahi-daemon postgresql mysql network-manager sendsigs rsyslog umountnfs.sh rpcbind nfs-common hwclock.sh networking umountfs cryptdisks cryptdisks-early umountroot live-tools halt reboot
+avahi-daemon: saned
+postgresql: metasploit exim4
+mysql: exim4
+network-manager: pulseaudio openvpn
+sendsigs: pulseaudio openvas-scanner thin dns2tcp darkstat tor arpwatch sslh greenbone-security-assistant nginx saned gdm3 apache2 samba miredo metasploit openvpn truecrypt snmpd bluetooth openvas-manager beef-xss speech-dispatcher iodined postgresql dradis atftpd redsocks exim4 network-manager atd stunnel4 mysql pcscd avahi-daemon rlinetd
+rsyslog: pulseaudio tor arpwatch sslh sendsigs nginx saned apache2 miredo openvpn snmpd bluetooth speech-dispatcher iodined postgresql atftpd exim4 network-manager atd stunnel4 mysql pcscd avahi-daemon rlinetd smartmontools
+umountnfs.sh: pulseaudio openvas-scanner thin dns2tcp darkstat tor arpwatch sslh greenbone-security-assistant rsyslog nginx saned sendsigs gdm3 apache2 samba miredo metasploit openvpn truecrypt snmpd bluetooth openvas-manager beef-xss speech-dispatcher iodined postgresql dradis atftpd redsocks exim4 network-manager atd stunnel4 mysql pcscd avahi-daemon rlinetd
+nfs-common: umountnfs.sh
+hwclock.sh: tor rsyslog nfs-common postgresql atd mysql
+networking: tor sslh umountnfs.sh rpcbind nginx apache2 samba metasploit openvpn snmpd iodined postgresql atftpd exim4 mysql
+umountfs: pulseaudio openvas-scanner thin dns2tcp darkstat tor arpwatch sslh hwclock.sh umountnfs.sh greenbone-security-assistant rpcbind nginx saned gdm3 apache2 samba miredo metasploit openvpn truecrypt networking snmpd bluetooth openvas-manager beef-xss speech-dispatcher iodined postgresql dradis atftpd redsocks exim4 network-manager atd stunnel4 urandom mysql pcscd avahi-daemon rlinetd
+cryptdisks: umountfs
+cryptdisks-early: cryptdisks umountfs
+umountroot: cryptdisks umountfs cryptdisks-early
+live-tools: umountroot
+halt: umountroot live-tools
+reboot: umountroot live-tools
