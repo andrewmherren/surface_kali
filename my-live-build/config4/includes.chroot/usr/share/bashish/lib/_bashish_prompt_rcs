@@ -1,0 +1,249 @@
+#!/bin/bash
+##################################################################################
+## Bashish, a console theme engine
+## Copyright (C) 2010 Thomas Eriksson
+##
+## This program is free software; you can redistribute it and/or
+## modify it under the terms of the GNU General Public License
+## as published by the Free Software Foundation; either version 2
+## of the License, or (at your option) any later version.
+##
+## This program is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+## GNU General Public License for more details.
+## 
+##
+## along with this program; if not, write to the Free Software
+## Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+##################################################################################
+##
+## _bashish_prompt_rcs displays a branch name for various revision control systems
+## 
+## if a directory is under control of multiple rcs systems, the first one will be
+## displayed in this order:
+##
+## git
+## hg
+## bzr
+## monotone
+## darcs
+## svn
+## cvs
+##
+##################################################################################
+
+## this is from git 1.6.6, slightly modified by doing away with the 
+## __gitdir function call (instead using the recursive O(n) shell based
+## replacement used for iterating hg and bzr repos)
+## __gitdir would otherwise call the git-binary invoking the slow loader.
+##
+## this is faster
+_bashish_prompt_rcs_git ()
+{
+	local g="$1"
+	#local g="$(__gitdir)"
+	if [ -n "$g" ]; then
+		local r
+		local b
+		if [ -f "$g/rebase-merge/interactive" ]; then
+			r="|REBASE-i"
+			b="$(cat "$g/rebase-merge/head-name")"
+		elif [ -d "$g/rebase-merge" ]; then
+			r="|REBASE-m"
+			b="$(cat "$g/rebase-merge/head-name")"
+		else
+			if [ -d "$g/rebase-apply" ]; then
+				if [ -f "$g/rebase-apply/rebasing" ]; then
+					r="|REBASE"
+				elif [ -f "$g/rebase-apply/applying" ]; then
+					r="|AM"
+				else
+					r="|AM/REBASE"
+				fi
+			elif [ -f "$g/MERGE_HEAD" ]; then
+				r="|MERGING"
+			elif [ -f "$g/BISECT_LOG" ]; then
+				r="|BISECTING"
+			fi
+
+			b="$(git symbolic-ref HEAD 2>/dev/null)" || {
+
+				b="$(
+				case "${GIT_PS1_DESCRIBE_STYLE-}" in
+				(contains)
+					git describe --contains HEAD ;;
+				(branch)
+					git describe --contains --all HEAD ;;
+				(describe)
+					git describe HEAD ;;
+				(* | default)
+					git describe --exact-match HEAD ;;
+				esac 2>/dev/null)" ||
+
+				b="$(cut -c1-7 "$g/HEAD" 2>/dev/null)..." ||
+				b="unknown"
+				b="($b)"
+			}
+		fi
+
+		local w
+		local i
+		local s
+		local u
+		local c
+
+		if [ "true" = "$(git rev-parse --is-inside-git-dir 2>/dev/null)" ]; then
+			if [ "true" = "$(git rev-parse --is-bare-repository 2>/dev/null)" ]; then
+				c="BARE:"
+			else
+				b="GIT_DIR!"
+			fi
+		elif [ "true" = "$(git rev-parse --is-inside-work-tree 2>/dev/null)" ]; then
+			if [ -n "${GIT_PS1_SHOWDIRTYSTATE-}" ]; then
+				if [ "$(git config --bool bash.showDirtyState)" != "false" ]; then
+					git diff --no-ext-diff --ignore-submodules \
+						--quiet --exit-code || w="*"
+					if git rev-parse --quiet --verify HEAD >/dev/null; then
+						git diff-index --cached --quiet \
+							--ignore-submodules HEAD -- || i="+"
+					else
+						i="#"
+					fi
+				fi
+			fi
+			if [ -n "${GIT_PS1_SHOWSTASHSTATE-}" ]; then
+			        git rev-parse --verify refs/stash >/dev/null 2>&1 && s="$"
+			fi
+
+			if [ -n "${GIT_PS1_SHOWUNTRACKEDFILES-}" ]; then
+			   if [ -n "$(git ls-files --others --exclude-standard)" ]; then
+			      u="%"
+			   fi
+			fi
+		fi
+		## orig code commented out (so newer versions gets easy to port)
+		## use $1 for gitdir instead		
+		#if [ -n "${1-}" ]; then
+		#	printf "$1" "$c${b##refs/heads/}$w$i$s$u$r"
+		#else
+		#	printf " (%s)" "$c${b##refs/heads/}$w$i$s$u$r"
+		#fi
+		printf "%s" "$c${b##refs/heads/}$w$i$s$u$r"
+	fi
+}
+
+
+_bashish_prompt_rcs_traverse ()
+{
+	test "x${1}" = x && return 1
+
+	if test -d "${1}/.git"
+	then
+		local GIT_PS1="$(LANG=C _bashish_prompt_rcs_git ${1}/.git )"
+		test x"${GIT_PS1}" != x && { printf "${GIT_PS1}"; return 0; }
+	elif test -d "${1}/.hg"
+	then
+		hg branch 2>/dev/null
+		return 0
+	elif test -d "${1}/.bzr"
+	then
+		if test -f "${1}/.bzr/branch/last-revision"
+		then
+			local BZR_REV=":$(cat ${1}/.bzr/branch/last-revision)"
+		else
+			local BZR_REV=":$(LANG=C bzr revno)"
+		fi
+		printf "${1##*/}${BZR_REV%% *}"
+		return 0
+	elif test -d "${1}/_MTN"
+	then
+		local IFS LINE="" MONOTONE_BRANCH=""
+		IFS="
+"
+		for LINE in $(cat ${1}/_MTN/options 2>/dev/null)
+		do
+			case "${LINE}" in
+			*"branch \""*) local MONOTONE_BRANCH="${LINE#*branch \"}";;
+			esac
+		done
+		unset IFS
+		printf "${MONOTONE_BRANCH%\"*}"
+		return 0
+	elif test -d "${1}/_darcs"
+	then
+		local LINE="" DARCS_PATCHES="" IFS="
+"
+		for LINE in $(LANG=C darcs show repo 2>/dev/null)
+		do
+			# Num Patches: 8187
+			case "${LINE}" in
+			"   Num Patches: "*) local DARCS_PATCHES="${LINE#   Num Patches: }";;
+			esac
+		done
+		unset IFS
+		printf "${1##*/}:${DARCS_PATCHES}"
+		return 0
+	else
+		_bashish_prompt_rcs_traverse "${1%/*}"
+	fi
+}
+
+_bashish_prompt_rcs ()
+{
+	local OLD_RCS="$1"
+	
+	## git, hg, bzr, and monotone detection
+	local TRAVERSED_PS1=$(_bashish_prompt_rcs_traverse "${PWD}")
+	if test x"${TRAVERSED_PS1}" != x
+	then
+		printf "${TRAVERSED_PS1}"
+		test "x${OLD_RCS}" = "x${TRAVERSED_PS1}" && return 1
+		return 0
+	fi
+
+	## svn detection
+	if test -d .svn
+	then
+		local IFS="
+"
+		local LINE
+		for LINE in $(LANG=C svn info 2>/dev/null)
+		do
+			case "${LINE}" in
+			"URL: "*) local SVN_URL="${LINE#URL: }";;
+			"Repository Root: "*) local SVN_ROOT="${LINE#Repository Root: }";;
+			"Revision: "*) local SVN_REV="${LINE#Revision: }"
+			esac
+		done
+		unset IFS
+		test "x${SVN_URL}" = x && { echo fail; return 0;}
+		if test "x$SVN_URL" = "x$SVN_ROOT"
+		then
+			local SVN_PS1=${SVN_URL##*/}
+		else		
+			eval local SVN_PS1="\"\${SVN_URL#${SVN_ROOT}/}\""
+		fi
+		if test x"${SVN_PS1%%/*}" != x
+		then
+			printf "${SVN_PS1%%/*}:${SVN_REV}"
+			test "x${OLD_RCS}" = "x${SVN_PS1%%/*}:${SVN_REV}" && return 1
+			return 0
+		fi
+	fi
+	
+	## cvs detection
+	if test -f CVS/Repository
+	then
+		CVS_PS1="$(cat CVS/Repository)"
+		if test x"${CVS_PS1%%/*}" != x
+		then
+			printf "${CVS_PS1%%/*}"
+			test "x${OLD_RCS}" = "x${CVS_PS1%%/*}" && return 1
+			return 0
+		fi
+	fi
+	return 1
+}
+
+test x$BASHISH_FNLOAD != x1 && _bashish_prompt_rcs "$@"

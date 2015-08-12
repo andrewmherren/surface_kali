@@ -1,0 +1,6 @@
+#!/bin/sh
+BASHISH_THEME=uberprompt
+_bashish_theme_uberprompt ()
+{
+	:
+}

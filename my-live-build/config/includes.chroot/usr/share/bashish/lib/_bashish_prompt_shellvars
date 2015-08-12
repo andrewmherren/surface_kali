@@ -1,0 +1,77 @@
+#!/bin/bash
+##################################################################################
+## Bashish, a console theme engine
+## Copyright (C) 2010 Thomas Eriksson
+##
+## This program is free software; you can redistribute it and/or
+## modify it under the terms of the GNU General Public License
+## as published by the Free Software Foundation; either version 2
+## of the License, or (at your option) any later version.
+##
+## This program is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+## GNU General Public License for more details.
+## 
+##
+## along with this program; if not, write to the Free Software
+## Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+##################################################################################
+##
+## _bashish_prompt_shellvars is a prompt helper
+##
+## it prints some helpful variables for prompts, currently
+## ESC - escape
+## EMBED - begin printing of terminal control characters within a prompt which would not be used for prompt length calculation
+## UNEMBED - end a terminal control character statement
+## 
+## the variables are local for the prompt and will not mess up local variables
+##
+##################################################################################
+
+test "x$SHELLNAME" = x && SHELLNAME="$1"
+
+## null function (to prevent accidental fork bombs)
+## call this function with eval $(_bashish_prompt_shellvars)
+function _bashish_prompt_shellvars_common
+{
+	case "$TERM" in
+	linux) printf " BOLD=0 BRIGHTFG=1;3";;
+	*) printf " BOLD=1 BRIGHTFG=9";;
+	esac
+	printf " SETCOLOR=m SETSCROLLREG=r SETCURPOS=H BG=3 FG=4 STORECUR=7 RESTORECUR=8 CURBACK=D CURFWD=C CURUP=A CURDOWN=D BEL=\"\007\" ESC=\"\033\"\n"
+}
+case "$SHELLNAME" in
+zsh)
+function _bashish_prompt_shellvars
+{
+	printf "local EMBED=\"%%{\" UNEMBED=\"%%}\" TIME=\"%%*\" DATE=%%D"
+	_bashish_prompt_shellvars_common
+}
+;;
+bash)
+function _bashish_prompt_shellvars
+{
+
+	printf "local EMBED=\"\\\\[\" UNEMBED=\"\\\\]\" DATE=\"\\\\d\" TIME=\"\\\\t\""
+	_bashish_prompt_shellvars_common
+}
+;;
+ksh)
+function _bashish_prompt_shellvars
+{
+	## all shells but ksh have "local", but dash does not have "typeset" or alias, hence local is preferred to use
+	printf "alias local=typeset; typeset EMBED=\"\" UNEMBED=\"\" TIME=\`date +\"%%R:%%S\""
+	_bashish_prompt_shellvars_common
+}
+;;
+sh|*)
+function _bashish_prompt_shellvars
+{
+	printf "local EMBED=\"\" UNEMBED=\" TIME=\`date +\"%%R:%%S\"\`\""
+	_bashish_prompt_shellvars_common
+}
+esac		
+
+
+test x$BASHISH_FNLOAD != x1 && _bashish_prompt_shellvars "$@"

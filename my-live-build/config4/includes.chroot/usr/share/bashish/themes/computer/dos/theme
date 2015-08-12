@@ -1,0 +1,45 @@
+#!/bin/sh
+## @(#) created by arne
+#######################
+##
+## the DOS theme
+##
+BASHISH_THEME=dos
+
+_bashish_theme_dos ()
+{
+THEME_AUTHOR="arne <arne@users.sourceforge.net>"
+THEME_COMMENT="A genuine look-a-like of the dos prompt. with a VGA font offcourse :)"
+THEME_NAME="generic DOS"
+THEME_VERSION="6.22"
+
+XFONT="vga-8x16.pcf.gz"
+TITLE="SH-DOS"
+FONTNAME=DOSEGA
+FONTSIZE=14
+BGCOLOR="#000000"
+FGCOLOR="#cccccc"
+BGBRIGHTNESS="#000000"
+
+## argh.. my eyes hurt =)
+COLOR[0]="#222222"
+COLOR[4]="#2222a8"
+COLOR[2]="#228822"
+COLOR[1]="#882222"
+COLOR[5]="#882288"
+COLOR[3]="#228888"
+COLOR[6]="#888822"
+COLOR[0]="#222222"
+COLOR[7]="#333333"
+COLORBRIGHT[14]="#882222"
+COLORBRIGHTGREEN="#229922"
+COLORBRIGHTBLUE="#222299"
+COLORBRIGHTMAGENTA="#992288"
+COLORBRIGHTCYAN="#229999"
+COLORBRIGHTYELLOW="#999922"
+COLORBRIGHTBLACK="#666666"
+COLORBRIGHTWHITE="#333333"
+
+BGTRANSPARENCY=0
+
+}

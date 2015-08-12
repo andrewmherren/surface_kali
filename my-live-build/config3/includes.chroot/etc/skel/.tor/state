@@ -1,0 +1,21 @@
+# Tor state file last generated on 2015-07-10 22:48:01 local time
+# Other times below are in UTC
+# You *do not* need to edit this file.
+
+EntryGuard GrmmlLitavis 7CB8C31432A796731EA7B6BF4025548DFEB25E0C DirCache
+EntryGuardAddedBy 7CB8C31432A796731EA7B6BF4025548DFEB25E0C 0.2.4.27 2015-06-25 14:39:10
+EntryGuardPathBias 8.000000 8.000000 8.000000 0.000000 0.000000 0.000000
+EntryGuard autarchprinceps 9DEB105A64DF80469642F4BEF0D9F551D8D2AF26 DirCache
+EntryGuardAddedBy 9DEB105A64DF80469642F4BEF0D9F551D8D2AF26 0.2.4.27 2015-07-07 03:51:57
+EntryGuard SH4D0W 7CB6C1EE763B2E64C17B42CD47A50EED01F32343 DirCache
+EntryGuardAddedBy 7CB6C1EE763B2E64C17B42CD47A50EED01F32343 0.2.4.27 2015-06-25 18:18:19
+TorVersion Tor 0.2.4.27 (git-412e3f7dc9c6c01a)
+LastWritten 2015-07-11 05:48:01
+TotalBuildTimes 8
+CircuitBuildTimeBin 475 1
+CircuitBuildTimeBin 525 2
+CircuitBuildTimeBin 675 1
+CircuitBuildTimeBin 725 1
+CircuitBuildTimeBin 775 1
+CircuitBuildTimeBin 1075 1
+CircuitBuildTimeBin 1325 1

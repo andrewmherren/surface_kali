@@ -1,0 +1,8 @@
+#!/bin/sh
+BASHISH_THEME=latex
+_bashish_theme_applatex () 
+{
+TITLE="LaTeX"
+IMAGEFILE=""
+EICON=tex.png
+}

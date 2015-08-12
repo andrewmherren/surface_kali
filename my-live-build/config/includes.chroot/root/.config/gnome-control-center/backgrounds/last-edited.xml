@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<!DOCTYPE wallpapers SYSTEM "gnome-wp-list.dtd">
+<wallpapers>
+  <wallpaper>
+    <name>kali_wood_wallpaper.jpg</name>
+    <filename>/root/.cache/gnome-control-center/backgrounds/b1e4ca4dcef97fb1a104123b70df40ab44266fed6c07e06059aeef48cfa330bc</filename>
+    <shade_type>solid</shade_type>
+    <source_url>file:///usr/share/wallpapers/kali_wood_wallpaper.jpg</source_url>
+  </wallpaper>
+</wallpapers>

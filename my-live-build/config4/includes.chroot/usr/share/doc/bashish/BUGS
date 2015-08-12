@@ -1,0 +1,28 @@
+BUGS
+----
+* The following bug is now mostly killed for Bashish, bashish now traps the WINCH 
+  before the application is started. The delay waiting for the SIGWINCH is roughly 
+  0.4s   on my AMD64 2800+
+
+  Keyboard dysfunction bug with various editors (seen on emacs, joe and vim
+  others will probably be affected too.)
+  When using Gnome-terminal in Metacity with full screen maximization and
+  switching the font so the aspect ratio of the terminal changes, the
+  terminal informs the application by signalling a WINCH signal. 
+  This unfortually happens at application startup, at the same time as the
+  editor tries to set the keyboard to a editor-friendly state with an 'ioctl'.
+  The 'ioctl' does furthermore not get set and keyboard movement keys and
+  control keys will be echoed in the terminal instead of trapped by the
+  editor.
+  By looking at the 'strace' of joe I found that I can reset the terminal to
+  the editor-friendly state by entering 'stty -opost -isig -icanon -echo </dev/pts/3' 
+  (with the affected tty as stdin)
+  
+  This bug has plauged Bashish a long while, it has probably been unseen as
+  no one has expected the programs to accept WINCH at startup.
+  As long as the terminal is able to send WINCH this might affect
+  applications, that means this bug could (and does) affect XTerm, aterm,
+  wterm, rxvt-unicode, rxvt, gnome-terminal.
+  Further discussion here (for 'joe'):
+  http://sourceforge.net/tracker/index.php?func=detail&aid=1413863&group_id=23475&atid=378598
+  I have not found this BUG on Solaris 10, might it be linux specific?

@@ -1,0 +1,7 @@
+#!/bin/sh
+BASHISH_THEME=generic
+_bashish_theme_appgeneric ()
+{
+	TITLE=${BASHISH_ARGV[0]*/}
+	ICON=$TITLE
+}

@@ -1,0 +1,92 @@
+#!/bin/bash
+##################################################################################
+## Bashish, a console theme engine
+## Copyright (C) 2010 Thomas Eriksson
+##
+## This program is free software; you can redistribute it and/or
+## modify it under the terms of the GNU General Public License
+## as published by the Free Software Foundation; either version 2
+## of the License, or (at your option) any later version.
+##
+## This program is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+## GNU General Public License for more details.
+## 
+## You should have received a copy of the GNU General Public License
+## along with this program; if not, write to the Free Software
+## Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+##################################################################################
+
+## termloader checks if a bashish process is running, if it doesn't,
+## the user is asked for needed input and then a process is started
+function _bashish_termloader
+{
+	## bashish terminal theming doesn't work on /dev/console (cygwin among others)
+	test "x${TTY}" = x/dev/console && return 0
+	
+	## the bashish terminal part makes no sense in Cygwin 9x/ME
+	test "x$TERM" = xcygwin && case "$(uname)"
+	in
+	CYGWIN_98*) exit 0
+	esac
+
+	## when not owner of tty (su / sudo ) or no tty is connected (incorrectly configured chroot)
+	## bashish will silently refuse to load
+	case "${TTY}" in
+	/*) 
+		test -O "${TTY}"  || errorhandler 42
+	;;
+	*) errorhandler 42
+	esac
+
+	## clean up bashish zombie processes that are connected to disconnected ttys
+	local TTYS
+	for TTYS in "$HOME"/.bashish/tmp/*
+	do
+		test -O "/dev/${TTYS##*/}" -o -O "/dev/pts/${TTYS##*/}"||{
+			read TTYPID <"${TTYS}/pid" 2>/dev/null
+			kill -9 "$TTYPID"
+			rm -rf ${TTYS}
+		## the zombie killings ain't pretty, hide from kids
+		} 2>/dev/null
+	done
+
+	## detect UTF-8
+	test "x$BASHISH_CP" = x && {
+		BASHISH_CP=437
+		. "$BASHISHDIR"/lib/_bashish_utfcheck && BASHISH_CP=utf8
+	}
+
+	## Cygwin compatibility code
+	local PROCEXIST=0
+ 	test -f "$HOME/.bashish/tmp/${TTY##*/}/pid" && {
+ 		read BASHISH_SUBPROC <"$HOME"/.bashish/tmp/"${TTY##*/}"/pid
+
+		case "$(uname)" in
+		CYGWIN*) ps -f -u "$USER" | grep "$BASHISH_SUBPROC" && PROCEXIST=1;;
+		*) ps "$BASHISH_SUBPROC" && PROCEXIST=1;;
+		esac >/dev/null 2>/dev/null
+	}
+
+	## if terminal loading is not enabled, don't start the terminal themer
+	test -f "${HOME}"/.bashish/terminal-theming-disabled && return 0
+
+	IPCDIR="$HOME/.bashish/tmp/${TTY##*/}"
+	
+	## ps usage which at least works with linux and cygwin
+	if test "$PROCEXIST" = 1
+	then
+		## kill old process
+		kill $BASHISH_SUBPROC 2>/dev/null
+	else
+		mkdir -p "${IPCDIR}/"
+		test -p "$IPCDIR/subproc" || mkfifo "$IPCDIR/subproc"
+
+	fi
+	export TTY BASHISHDIR BASHISH_UTF
+	"$BASHISH_SHELL" "$BASHISHDIR"/lib/_bashish_fork "$BASHISH_SHELL" "$BASHISHDIR"/lib/_bashish_subproc
+	echo "" > "$IPCDIR/subproc"
+}
+_bashish_termloader
+

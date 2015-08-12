@@ -169,10 +169,14 @@ for KALI_ARCH in $KALI_ARCHES; do
 	IMAGE_NAME="$(image_name $KALI_ARCH)"
 	set +e
 	: > build.log
-#	run_and_log $SUDO lb clean --purge
-#	[ $? -eq 0 ] || failure
-#	run_and_log lb config -a $KALI_ARCH $KALI_CONFIG_OPTS "$@"
-#	[ $? -eq 0 ] || failure
+	run_and_log $SUDO lb clean --purge
+	[ $? -eq 0 ] || failure
+	run_and_log lb config -a $KALI_ARCH $KALI_CONFIG_OPTS "$@"
+	[ $? -eq 0 ] || failure
+	rm -r /live-build-config/config
+	cp -r /root/surface_kali/my-live-build/config /live-build-config/
+	rm -r /live-build/config/auto
+	cp -r /root/surface_kali/my-live-build/auto /live-build-config/
 	run_and_log $SUDO lb build
 	if [ $? -ne 0 ] || [ ! -e $IMAGE_NAME ]; then
 		failure

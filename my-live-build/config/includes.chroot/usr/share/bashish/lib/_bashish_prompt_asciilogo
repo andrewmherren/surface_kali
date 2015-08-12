@@ -1,0 +1,101 @@
+#!/bin/bash
+##################################################################################
+## Bashish, a console theme engine
+## Copyright (C) 2010 Thomas Eriksson
+##
+## This program is free software; you can redistribute it and/or
+## modify it under the terms of the GNU General Public License
+## as published by the Free Software Foundation; either version 2
+## of the License, or (at your option) any later version.
+##
+## This program is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+## GNU General Public License for more details.
+## 
+## You should have received a copy of the GNU General Public License
+## along with this program; if not, write to the Free Software
+## Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+##################################################################################
+function _bashish_prompt_asciilogo
+{
+	test "x${BASHISH_ASCIILOGO}" != x && return 0
+	
+	local XCENTER=1
+	local YCENTER=1
+	if test "x$1" = xxcenter
+	then
+		YCENTER=0
+		shift
+	elif test "x$1" = xnocenter
+	then
+		YCENTER=0
+		XCENTER=0
+		shift
+	fi
+
+	local XDECREMENT=0
+	if test "x$2" != x
+	then
+		## override length calculation by XDECREMENT 
+		## the lenght calculation include non-printing characters
+		## which must be adjusted for
+		XDECREMENT="$2"
+	fi
+	
+	## clear the screen prior to displaying startup messages
+	printf "\033[2J"
+
+	## need a newline so the prompt don't get eaten by the consoletitle
+	## welcomemessage upon startup
+
+	## ascii startup logo
+	local IFS="
+"
+	local LINELENGTH=0
+	local FILELINES=0
+	for LINE in $(cat "${HOME}/.bashish/prompt/$1")
+	do
+		test ${#LINE} -gt ${LINELENGTH} && LINELENGTH=${#LINE}
+		let FILELINES++
+	done
+	unset IFS
+	
+	local INDEX=0
+	local FILLSPACES=$(((${COLUMNS} - ${LINELENGTH} + ${XDECREMENT}) / 2 ))
+
+	local FILL=""
+
+	test x${XCENTER} = x1 && while test ${INDEX} -lt ${FILLSPACES}
+	do
+		FILL="${FILL} "
+		let INDEX++
+	done
+	local FILLHEIGHTSPACES=$(((${LINES} - ${FILELINES})  / 2))
+	INDEX=0
+	test x${YCENTER} = x1 && while test ${INDEX} -lt ${FILLHEIGHTSPACES}
+	do
+		printf "
+"
+		let INDEX++
+	done
+
+	local IFS="
+"
+	for LINE in $(cat "${HOME}/.bashish/prompt/$1")
+	do
+		echo "${FILL}${LINE}"
+	done
+	unset IFS
+
+	INDEX=0
+	test x${YCENTER} = x1 && while test ${INDEX} -lt ${FILLHEIGHTSPACES}
+	do
+		printf "
+"
+		let INDEX++
+	done
+	BASHISH_ASCIILOGO=1
+}
+
+test x$BASHISH_FNLOAD != x1 && _bashish_prompt_asciilogo "$@"

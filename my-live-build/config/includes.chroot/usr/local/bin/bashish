@@ -1,0 +1,94 @@
+#!/bin/bash
+BASHISHDIR="/usr/share/bashish"
+BASHISH_SHELL="/bin/bash"
+##################################################################################
+## Bashish, a console theme engine
+## Copyright (C) 2010 Thomas Eriksson
+##
+## This program is free software; you can redistribute it and/or
+## modify it under the terms of the GNU General Public License
+## as published by the Free Software Foundation; either version 2
+## of the License, or (at your option) any later version.
+##
+## This program is distributed in the hope that it will be useful,
+## but WITHOUT ANY WARRANTY; without even the implied warranty of
+## MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+## GNU General Public License for more details.
+## 
+## You should have received a copy of the GNU General Public License
+## along with this program; if not, write to the Free Software
+## Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+##################################################################################
+##
+## this is the interface to the user when the 'bashish' command is
+## issued, if no arguments are given, a bashish session will start
+##
+###############################################################################
+
+## disable application themeing
+export BASHISH_DISABLED=1
+
+
+## restart with XTerm if not connected to a tty
+#tty -s||{
+#	test "$1"||exec xterm $0
+#}
+test -d "$HOME/.bashish/prompt" && case "$1" in
+	init|-i*|--init)
+		## if terminal loading is not enabled, don't start the terminal themer
+		test -f "${HOME}"/.bashish/terminal-theming-disabled && exit 1
+
+		## termloader checks if a bashish process is running, if it doesn't,
+		## the user is asked for needed input and then a process is started
+		## bashish terminal theming doesn't work on /dev/console (cygwin among others)
+		test "x${TTY}" = x/dev/console && exit 1
+		
+		## the bashish terminal part makes no sense in Cygwin 9x/ME
+		test "x$TERM" = xcygwin && case "$(uname)"
+		in
+		CYGWIN_98*) exit 0
+		esac
+	
+		## when not owner of tty (su / sudo ) or no tty is connected (incorrectly configured chroot)
+		## bashish will silently refuse to load
+		case "${TTY}" in
+		/*) 
+			test -O "${TTY}"  || exit 42
+		;;
+		*) exit 42
+		esac
+	
+		## detect UTF-8
+		test "x$BASHISH_CP" = x && {
+			BASHISH_CP=437
+			. "$BASHISHDIR"/lib/_bashish_utfcheck && BASHISH_CP=utf8
+		}
+	
+		IPCDIR="$HOME/.bashish/tmp/${TTY##*/}"
+		export TTY BASHISHDIR BASHISH_UTF
+		## dash is a bit faster at startup, at the cost of syntax
+		FORK_SHELL=sh
+		_bashish_fork()
+		{
+			${1+"$@"}&
+		}
+		#type -p dash 1>/dev/null 2>/dev/null && FORK_SHELL=dash
+		_bashish_fork "$BASHISH_SHELL" "$BASHISHDIR"/main/terminal/init
+		exit 1
+;;
+esac
+
+## generic C-isch argv 
+## portable among ksh-compatible shells
+n=0
+BASHISH_ARGV[$n]="$1"
+while test "x$2" != x
+do
+	shift
+	let n++
+	BASHISH_ARGV[$n]="$1"
+done
+BASHISH_ARGC=${#BASHISH_ARGV[*]}
+
+## load initialization file
+. "${BASHISHDIR}"/main/bashish/init||{ printf "\n\n$0: load error, reinstall bashish\n";exit 2; }
