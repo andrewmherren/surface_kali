@@ -1,0 +1,69 @@
+Index: linux-bad/drivers/acpi/power.c
+===================================================================
+--- linux-bad.orig/drivers/acpi/power.c
++++ linux-bad/drivers/acpi/power.c
+@@ -263,6 +263,29 @@ static int acpi_power_on(struct acpi_pow
+ 	return result;
+ }
+ 
++static int acpi_power_is_on_list(struct list_head *list)
++{
++	struct acpi_power_resource_entry *entry;
++	struct acpi_power_resource *resource;
++	int result = 0;
++
++	list_for_each_entry_reverse(entry, list, node) {
++		resource = entry->resource;
++		mutex_lock(&resource->resource_lock);
++		/*
++		 * If one of the resource is off, device
++		 * is not powered on in current state.
++		 */
++		if (!resource->ref_count)
++			result = -ENODEV;
++		mutex_unlock(&resource->resource_lock);
++		if (result)
++			goto out;
++	}
++out:
++	return result;
++}
++
+ static int __acpi_power_off(struct acpi_power_resource *resource)
+ {
+ 	acpi_status status;
+@@ -700,6 +723,7 @@ int acpi_power_on_resources(struct acpi_
+ int acpi_power_transition(struct acpi_device *device, int state)
+ {
+ 	int result = 0;
++	bool d3hot_poweron = true;
+ 
+ 	if (!device || (state < ACPI_STATE_D0) || (state > ACPI_STATE_D3_COLD))
+ 		return -EINVAL;
+@@ -712,6 +736,17 @@ int acpi_power_transition(struct acpi_de
+ 		return -ENODEV;
+ 
+ 	/*
++	 * Power resources in D3_HOT, can be either 'on' or 'off',
++	 * for those already powered off, we should not turn them off,
++	 * thus treat them as in D3_COLD does. If we don't do like this,
++	 * we might turn power resource off after transitting from D3_HOT
++	 * to D0.
++	 */
++	if ((ACPI_STATE_D3_HOT == device->power.state) &&
++		acpi_power_is_on_list(
++			&device->power.states[ACPI_STATE_D3_HOT].resources))
++		d3hot_poweron = false;
++	/*
+ 	 * First we reference all power resources required in the target list
+ 	 * (e.g. so the device doesn't lose power while transitioning).  Then,
+ 	 * we dereference all power resources used in the current list.
+@@ -720,7 +755,7 @@ int acpi_power_transition(struct acpi_de
+ 		result = acpi_power_on_list(
+ 			&device->power.states[state].resources);
+ 
+-	if (!result && device->power.state < ACPI_STATE_D3_COLD)
++	if (!result && device->power.state < ACPI_STATE_D3_COLD && d3hot_poweron)
+ 		acpi_power_off_list(
+ 			&device->power.states[device->power.state].resources);
+ 
