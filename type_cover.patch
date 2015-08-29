@@ -1,5 +1,5 @@
---- hid-ids.h	2015-05-17 09:55:21.000000000 -0700
-+++ /root/surface_kali/hid-ids.h	2015-08-28 14:54:00.003917150 -0700
+--- a/drivers/hid/hid-ids.h	2015-05-17 09:55:21.000000000 -0700
++++ b/drivers/hid/hid-ids.h	2015-08-28 14:54:00.003917150 -0700
 @@ -667,6 +667,7 @@
  #define USB_DEVICE_ID_MS_TYPE_COVER_2    0x07a9
  #define USB_DEVICE_ID_MS_TYPE_COVER_3    0x07dc
@@ -8,8 +8,8 @@
  
  #define USB_VENDOR_ID_MOJO		0x8282
  #define USB_DEVICE_ID_RETRO_ADAPTER	0x3201
---- hid-microsoft.c	2015-05-17 09:55:21.000000000 -0700
-+++ /root/surface_kali/hid-microsoft.c	2015-08-28 15:09:13.315896068 -0700
+--- a/drivers/hid/hid-microsoft.c	2015-05-17 09:55:21.000000000 -0700
++++ b/drivers/hid/hid-microsoft.c	2015-08-28 15:09:13.315896068 -0700
 @@ -278,6 +278,8 @@
  		.driver_data = MS_DUPLICATE_USAGES },
  	{ HID_USB_DEVICE(USB_VENDOR_ID_MICROSOFT, USB_DEVICE_ID_MS_TYPE_COVER_3),
