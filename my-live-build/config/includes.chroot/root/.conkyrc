@@ -44,7 +44,7 @@
   uppercase no                        #Only capital letters
   use_spacer right                    #Adds spaces around certain objects to stop them from moving other things around
   #
-  xftfont saxMono:size=12              #Default font
+  xftfont saxMono:size=16              #Default font
   #
   default_bar_size 82 3               #Specify a default width and height for bars
   stippled_borders 3                  #Border dashing
@@ -74,39 +74,39 @@
 TEXT
 # ..: CLOCK & CALENDAR :..
 ${color d7d7d7}${offset 56}${voffset -1}${cpugraph cpu6 17,1}${voffset -3}${hr 2}${color3}
-${voffset -9}${offset 110}${font neuropol:size=20}${time %H:%M}${font}  ${voffset -3}${font Nimbus Mono L:size=12}$uptime
-${voffset -5}${offset 110}${cpubar cpu6 0, 200}${voffset 2}${color1}
+${voffset -9}${offset 110}${font neuropol:size=30}${time %H:%M}${font}  ${voffset -3}${font Nimbus Mono L:size=20}$uptime
+${voffset -5}${offset 110}${cpubar cpu6 0, 120}${voffset 2}${color1}
 
 #..: BATTERY :..
 ${color d7d7d7}${offset 100}${voffset -8}${cpugraph cpu6 17,1}${voffset -3}${hr 2}${color3}
-${offset 150}${voffset -10} ${font neuropol:size=20}${battery_percent BAT0}%${font Nimbus Mono L:size=12 style=bold}  Battery
-${offset 160}${voffset -5}${cpubar cpu6 0, 150}${voffset 2}${color1}
+${offset 150}${voffset -10} ${font neuropol:size=30}${battery_percent BAT0}%${font Nimbus Mono L:size=20 style=bold}  Battery
+${offset 160}${voffset -5}${cpubar cpu6 0, 120}${voffset 2}${color1}
 
 #..: CPU USAGE :..
 #--- if you use a multi-core system, change values ---
 #--- in this case, you may cange position of objects (offset, voffset) ---
 ${color d7d7d7}${offset 150}${voffset 3}${cpugraph cpu6 17,1}${voffset -3}${hr 2}${color3}
-${offset 200}${voffset -7}${font neuropol:size=20}${cpu cpu1}% ${font Nimbus Mono L:size=12 style=bold}Cpu
-${offset 200}${voffset -5}${cpubar cpu6 0, 110}${voffset 2}${color1}
+${offset 200}${voffset -7}${font neuropol:size=30}${cpu cpu1}% ${font Nimbus Mono L:size=20 style=bold}Cpu
+${offset 200}${voffset -5}${cpubar cpu6 0, 80}${voffset 2}${color1}
 
 
 #..: HARD DISK :..
 #--- correct to your partitions ---
 ${color d7d7d7}${offset 100}${voffset -30}${cpugraph cpu6 17,1}${voffset -3}${hr 2}${color3}
-${offset 170}${font neuropol:size=20}$memperc% ${font Nimbus Mono L:size=12 style=bold} Ram
-${offset 170}${voffset -5}${cpubar cpu6 0, 110}${voffset 2}${color1}
-${offset 130}${font Nimbus Mono L:size=12 style=bold}root   ${fs_free /} / ${fs_size /}
+${offset 170}${font neuropol:size=30}$memperc% ${font Nimbus Mono L:size=20 style=bold} Ram
+${offset 170}${voffset -5}${cpubar cpu6 0, 80}${voffset 2}${color1}
+${offset 100}${font Nimbus Mono L:size=20 style=bold}root   ${fs_free /} / ${fs_size /}
 
 #..: Netowrk ":..
 ${if_up mlan0}
-${color d7d7d7}${offset 0}${voffset -1}${cpugraph cpu6 17,1}${voffset -3}${hr 2}${color3}
-${offset 170}${font neuropol:size=20}${wireless_link_qual_perc mlan0}% ${font Nimbus Mono L:size=12 style=bold} WiFi
-${offset 170}${voffset -5}${cpubar cpu6 0, 110}${voffset 2}${color1}
-ESSID: $alignr${offset -10}${wireless_essid mlan0}
-DLS: ${downspeed mlan0} $alignr ${offset -10}Total: ${totaldown mlan0}
-ULS: ${upspeed mlan0} $alignr ${offset -10}Total: ${totalup mlan0}
-Public IP: $alignr ${offset -10}${execi 3600 wget -O - http://whatismyip.org/ | awk '/[0-9]\./{print substr($7,7,length($7)-14)}'}
-${voffset -55}Local IP: $alignr${offset -10}${addr mlan0}
+${color d7d7d7}${offset 6}${voffset -1}${cpugraph cpu6 17,1}${voffset -3}${hr 2}${color3}
+${offset 190}${font neuropol:size=30}${wireless_link_qual_perc mlan0}% ${font Nimbus Mono L:size=20 style=bold} WiFi
+${offset 170}${voffset -5}${cpubar cpu6 0, 150}${voffset 2}${color1}
+ESSID: $alignr${offset -20}${wireless_essid mlan0}
+DLS: ${downspeed mlan0} $alignr${offset -20} Total: ${totaldown mlan0}
+ULS: ${upspeed mlan0} $alignr${offset -20} Total: ${totalup mlan0}
+Public IP: $alignr${offset -20} ${execi 3600 wget -O - http://whatismyip.org/ | awk '/[0-9]\./{print substr($7,7,length($7)-14)}'}
+${voffset -55}Local IP: $alignr${offset -20}${addr mlan0}
 ${endif}
 
 
