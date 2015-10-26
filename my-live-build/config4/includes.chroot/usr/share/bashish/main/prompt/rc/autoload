@@ -1,3 +1,0 @@
-BASHISHDIR=$home/.bashish                                           ## line added by bashish
-~ $path */.bashish/launcher || path=($home/.bashish/launcher $path) ## line added by bashish
-. $BASHISHDIR/main/prompt/rc/init                                   ## line added by bashish

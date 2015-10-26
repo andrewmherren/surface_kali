@@ -1,4 +1,0 @@
-@SET BASHISHDIR=GENERATE_ME                ;@REM ## line added by bashish
-@SET PATH=%HOME\.bashish\launcher;%PATH    ;@REM ## line added by bashish
-@bashish                                   ;@REM ## line added by bashish
-@call %BASHISHDIR\main\prompt\dos\init     ;@REM ## line added by bashish

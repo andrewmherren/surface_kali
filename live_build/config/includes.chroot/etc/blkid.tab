@@ -1,4 +1,0 @@
-<device DEVNO="0x0801" TIME="1437079346.814775" LABEL="Windows RE tools" UUID="B47AD5E97AD5A7FE" TYPE="ntfs">/dev/sda1</device>
-<device DEVNO="0x0802" TIME="1437079347.66349" LABEL="SYSTEM" UUID="14D5-D4D0" TYPE="vfat">/dev/sda2</device>
-<device DEVNO="0x0805" TIME="1437079347.380203" LABEL="Recovery image" UUID="C86CE35C6CE34432" TYPE="ntfs">/dev/sda5</device>
-<device DEVNO="0x0813" TIME="1437079304.149963" UUID="925ebf17-230f-43ea-aa51-81a5fed2e6ce" TYPE="swap">/dev/sdb3</device>

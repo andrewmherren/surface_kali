@@ -1,3 +1,0 @@
-#!/bin/sh
-_bashish_theme_elite2 () { :;}
-BASHISH_THEME=elite2
